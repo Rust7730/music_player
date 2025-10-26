@@ -87,9 +87,15 @@ export class MusicPlayerComponent {
    * Selecciona una canción de los resultados
    */
   selectTrack(track: Track, index: number): void {
-    this.currentTrack = track;
-    this.currentTrackIndex = index;
-    this.isPlaying = true;
+    // [SIM EXPERIMENT 3] If the same track is clicked, toggle play/pause instead of reselecting
+    if (this.currentTrack && this.currentTrack.id === track.id) {
+      console.log('[SIM] selectTrack called on same track - toggling play/pause');
+      this.isPlaying = !this.isPlaying;
+    } else {
+      this.currentTrack = track;
+      this.currentTrackIndex = index;
+      this.isPlaying = true;
+    }
   }
 
   /**
@@ -122,8 +128,13 @@ export class MusicPlayerComponent {
    * Reproduce la siguiente canción
    */
   playNext(): void {
-    if (this.searchResults.length > 0 && this.currentTrackIndex < this.searchResults.length - 1) {
-      this.currentTrackIndex++;
+    // [SIM EXPERIMENT 5] Wrap to the start when reaching the end (circular next)
+    if (this.searchResults.length > 0) {
+      if (this.currentTrackIndex < this.searchResults.length - 1) {
+        this.currentTrackIndex++;
+      } else {
+        this.currentTrackIndex = 0; // wrap
+      }
       this.selectTrack(this.searchResults[this.currentTrackIndex], this.currentTrackIndex);
     }
   }
@@ -142,7 +153,8 @@ export class MusicPlayerComponent {
    * Obtiene los nombres de los artistas
    */
   getArtistsNames(track: Track): string {
-    return track.artists.map(artist => artist.name).join(', ');
+    // [SIM EXPERIMENT 7] Return artist names in uppercase for the experiment
+    return track.artists.map(artist => artist.name.toUpperCase()).join(', ');
   }
 
   /**
