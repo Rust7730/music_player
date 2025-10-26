@@ -48,6 +48,12 @@
             <path fill="currentColor" d="M16 18h2V6h-2zm-11-7l8.5-6v12z"/>
           </svg>
         </button>
+        
+        <!-- Volume control -->
+        <div class="volume-control" aria-hidden="false">
+          <label for="volume-range" class="sr-only">Volumen</label>
+          <input id="volume-range" type="range" min="0" max="1" step="0.01" [value]="volume" (input)="setVolume($event)" title="Volumen" aria-label="Control de volumen" />
+        </div>
       </div>
 
       <!-- Información de la canción -->
@@ -109,6 +115,12 @@
         [class.active]="currentTrack?.id === track.id">
         
         <img 
+
+      <!-- Barra de progreso y tiempo -->
+      <div class="progress-container" *ngIf="currentTrack">
+        <input class="progress-bar" type="range" min="0" [max]="duration || 0" [value]="currentTime || 0" (input)="onSeek($event)" aria-label="Barra de progreso de la pista" />
+        <div class="time-info"><span class="current">{{ formatTime(currentTime) }}</span><span class="sep">/</span><span class="total">{{ formatTime(duration) }}</span></div>
+      </div>
           [src]="getTrackThumbnail(track)" 
           [alt]="track.name"
           class="result-thumbnail" />
