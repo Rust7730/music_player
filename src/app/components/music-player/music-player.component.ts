@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { SpotifyService } from '../../services/spotify.service';
 import { Track } from '../../models/track.model';
 
@@ -11,6 +11,8 @@ export class MusicPlayerComponent {
   // Estado del reproductor
   currentTrack: Track | null = null;
   isPlaying: boolean = false;
+  // Elemento de audio para reproducir previews
+  private audio: HTMLAudioElement | null = null;
   
   // Estado de búsqueda
   searchQuery: string = '';
@@ -22,6 +24,14 @@ export class MusicPlayerComponent {
   constructor(private spotifyService: SpotifyService) {
     // Configurar canción por defecto
     this.setDefaultTrack();
+  }
+
+  ngOnDestroy(): void {
+    // Asegurarse de pausar y limpiar el audio al destruir el componente
+    if (this.audio) {
+      try { this.audio.pause(); } catch (e) { /* ignore */ }
+      this.audio = null;
+    }
   }
 
   /**
@@ -89,14 +99,42 @@ export class MusicPlayerComponent {
   selectTrack(track: Track, index: number): void {
     this.currentTrack = track;
     this.currentTrackIndex = index;
-    this.isPlaying = true;
+    // Si la pista tiene un preview, reproducirlo con Audio (si no, sólo marcar como seleccionada)
+    if (this.audio) {
+      try { this.audio.pause(); } catch (e) { /* ignore */ }
+      this.audio = null;
+    }
+
+    if (track.preview_url) {
+      this.audio = new Audio(track.preview_url);
+      this.audio.play().then(() => {
+        this.isPlaying = true;
+      }).catch((err) => {
+        console.warn('No se pudo reproducir preview:', err);
+        this.isPlaying = false;
+      });
+    } else {
+      this.isPlaying = false;
+    }
   }
 
   /**
    * Alterna entre reproducir y pausar
    */
   togglePlayPause(): void {
-    if (this.currentTrack) {
+    if (!this.currentTrack) {
+      return;
+    }
+
+    if (this.audio) {
+      if (this.isPlaying) {
+        this.audio.pause();
+        this.isPlaying = false;
+      } else {
+        this.audio.play().then(() => this.isPlaying = true).catch(() => this.isPlaying = false);
+      }
+    } else {
+      // Si no hay preview, alternar sólo el estado visual
       this.isPlaying = !this.isPlaying;
     }
   }
