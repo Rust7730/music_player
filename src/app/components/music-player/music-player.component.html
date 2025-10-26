@@ -8,11 +8,13 @@
       </div>
 
       <!-- Controles de reproducción -->
-      <div class="player-controls">
+      <div class="player-controls" role="group" aria-label="Controles de reproducción">
         <button 
+          type="button"
           class="control-btn" 
           (click)="playPrevious()"
           [disabled]="currentTrackIndex <= 0"
+          aria-label="Reproducir anterior"
           title="Anterior">
           <svg viewBox="0 0 24 24" width="24" height="24">
             <path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
@@ -20,9 +22,12 @@
         </button>
 
         <button 
+          type="button"
           class="control-btn play-btn" 
           (click)="togglePlayPause()"
           [class.playing]="isPlaying"
+          aria-pressed="{{isPlaying}}"
+          aria-label="Reproducir o pausar"
           title="Reproducir/Pausar">
           <svg *ngIf="!isPlaying" viewBox="0 0 24 24" width="32" height="32">
             <path fill="currentColor" d="M8 5v14l11-7z"/>
@@ -33,9 +38,11 @@
         </button>
 
         <button 
+          type="button"
           class="control-btn" 
           (click)="playNext()"
           [disabled]="currentTrackIndex >= searchResults.length - 1 || searchResults.length === 0"
+          aria-label="Reproducir siguiente"
           title="Siguiente">
           <svg viewBox="0 0 24 24" width="24" height="24">
             <path fill="currentColor" d="M16 18h2V6h-2zm-11-7l8.5-6v12z"/>
@@ -53,11 +60,11 @@
 
   <!-- Panel de búsqueda (Derecha) -->
   <div class="search-panel">
-    <div class="search-header">
-      <h2>Buscar canciones</h2>
+  <div class="search-header">
+  <h2 id="search-heading">Buscar canciones</h2>
       
-      <!-- Barra de búsqueda -->
-      <div class="search-bar">
+  <!-- Barra de búsqueda -->
+  <form class="search-bar" role="search" aria-labelledby="search-heading" (submit)="$event.preventDefault(); searchTracks();">
         <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
           <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
@@ -65,16 +72,17 @@
           type="text" 
           [(ngModel)]="searchQuery"
           (keypress)="onSearchKeyPress($event)"
+          aria-label="Buscar canciones"
           placeholder="Artista, canción o álbum..."
           class="search-input" />
         <button 
+          type="submit"
           class="search-btn" 
-          (click)="searchTracks()"
           [disabled]="!searchQuery.trim() || isSearching">
           Buscar
         </button>
+      </form>
       </div>
-    </div>
 
     <!-- Indicador de carga -->
     <div class="loading" *ngIf="isSearching">
