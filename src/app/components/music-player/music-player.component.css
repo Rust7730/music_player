@@ -80,6 +80,12 @@
   box-shadow: 0 0 20px rgba(29, 185, 84, 0.5);
 }
 
+/* Mejora de accesibilidad: foco visible en controles */
+.control-btn:focus {
+  outline: 3px solid rgba(29, 185, 84, 0.22);
+  outline-offset: 3px;
+}
+
 .control-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
@@ -190,6 +196,12 @@
 
 .search-input::placeholder {
   color: #b3b3b3;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29,185,84,0.12);
+  border-radius: 20px;
 }
 
 .search-btn {
