@@ -8,13 +8,11 @@
       </div>
 
       <!-- Controles de reproducción -->
-      <div class="player-controls" role="group" aria-label="Controles de reproducción">
+      <div class="player-controls">
         <button 
-          type="button"
           class="control-btn" 
           (click)="playPrevious()"
           [disabled]="currentTrackIndex <= 0"
-          aria-label="Reproducir anterior"
           title="Anterior">
           <svg viewBox="0 0 24 24" width="24" height="24">
             <path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
@@ -22,12 +20,9 @@
         </button>
 
         <button 
-          type="button"
           class="control-btn play-btn" 
           (click)="togglePlayPause()"
           [class.playing]="isPlaying"
-          [attr.aria-pressed]="isPlaying"
-          aria-label="Reproducir o pausar"
           title="Reproducir/Pausar">
           <svg *ngIf="!isPlaying" viewBox="0 0 24 24" width="32" height="32">
             <path fill="currentColor" d="M8 5v14l11-7z"/>
@@ -38,22 +33,14 @@
         </button>
 
         <button 
-          type="button"
           class="control-btn" 
           (click)="playNext()"
           [disabled]="currentTrackIndex >= searchResults.length - 1 || searchResults.length === 0"
-          aria-label="Reproducir siguiente"
           title="Siguiente">
           <svg viewBox="0 0 24 24" width="24" height="24">
             <path fill="currentColor" d="M16 18h2V6h-2zm-11-7l8.5-6v12z"/>
           </svg>
         </button>
-        
-        <!-- Volume control -->
-        <div class="volume-control" aria-hidden="false">
-          <label for="volume-range" class="sr-only">Volumen</label>
-          <input id="volume-range" type="range" min="0" max="1" step="0.01" [value]="volume" (input)="setVolume($event)" title="Volumen" aria-label="Control de volumen" />
-        </div>
       </div>
 
       <!-- Información de la canción -->
@@ -66,11 +53,11 @@
 
   <!-- Panel de búsqueda (Derecha) -->
   <div class="search-panel">
-  <div class="search-header">
-  <h2 id="search-heading">Buscar canciones</h2>
+    <div class="search-header">
+      <h2>Buscar canciones</h2>
       
-  <!-- Barra de búsqueda -->
-  <form class="search-bar" role="search" aria-labelledby="search-heading" (submit)="$event.preventDefault(); searchTracks();">
+      <!-- Barra de búsqueda -->
+      <div class="search-bar">
         <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
           <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
@@ -78,17 +65,16 @@
           type="text" 
           [(ngModel)]="searchQuery"
           (keypress)="onSearchKeyPress($event)"
-          aria-label="Buscar canciones"
           placeholder="Artista, canción o álbum..."
           class="search-input" />
         <button 
-          type="submit"
           class="search-btn" 
+          (click)="searchTracks()"
           [disabled]="!searchQuery.trim() || isSearching">
           Buscar
         </button>
-      </form>
       </div>
+    </div>
 
     <!-- Indicador de carga -->
     <div class="loading" *ngIf="isSearching">
@@ -115,12 +101,6 @@
         [class.active]="currentTrack?.id === track.id">
         
         <img 
-
-      <!-- Barra de progreso y tiempo -->
-      <div class="progress-container" *ngIf="currentTrack">
-        <input class="progress-bar" type="range" min="0" [max]="duration || 0" [value]="currentTime || 0" (input)="onSeek($event)" aria-label="Barra de progreso de la pista" />
-        <div class="time-info"><span class="current">{{ formatTime(currentTime) }}</span><span class="sep">/</span><span class="total">{{ formatTime(duration) }}</span></div>
-      </div>
           [src]="getTrackThumbnail(track)" 
           [alt]="track.name"
           class="result-thumbnail" />
