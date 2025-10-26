@@ -26,7 +26,7 @@
           class="control-btn play-btn" 
           (click)="togglePlayPause()"
           [class.playing]="isPlaying"
-          aria-pressed="{{isPlaying}}"
+          [attr.aria-pressed]="isPlaying"
           aria-label="Reproducir o pausar"
           title="Reproducir/Pausar">
           <svg *ngIf="!isPlaying" viewBox="0 0 24 24" width="32" height="32">
