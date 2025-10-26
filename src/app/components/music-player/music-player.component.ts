@@ -97,7 +97,14 @@ export class MusicPlayerComponent {
    */
   togglePlayPause(): void {
     if (this.currentTrack) {
-      this.isPlaying = !this.isPlaying;
+      // [SIM EXPERIMENT 1] Log and apply alternative toggle behaviour for testing
+      console.log('[SIM] togglePlayPause called - experiment 1');
+      // Simulated behaviour: explicitly set play when currently stopped, otherwise pause
+      if (!this.isPlaying) {
+        this.isPlaying = true;
+      } else {
+        this.isPlaying = false;
+      }
     }
   }
 
