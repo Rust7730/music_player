@@ -87,15 +87,9 @@ export class MusicPlayerComponent {
    * Selecciona una canción de los resultados
    */
   selectTrack(track: Track, index: number): void {
-    // [SIM EXPERIMENT 3] If the same track is clicked, toggle play/pause instead of reselecting
-    if (this.currentTrack && this.currentTrack.id === track.id) {
-      console.log('[SIM] selectTrack called on same track - toggling play/pause');
-      this.isPlaying = !this.isPlaying;
-    } else {
-      this.currentTrack = track;
-      this.currentTrackIndex = index;
-      this.isPlaying = true;
-    }
+    this.currentTrack = track;
+    this.currentTrackIndex = index;
+    this.isPlaying = true;
   }
 
   /**
