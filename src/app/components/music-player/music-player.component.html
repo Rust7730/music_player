@@ -1,0 +1,122 @@
+<div class="music-player-container">
+  <!-- Sección del reproductor principal (Izquierda) -->
+  <div class="player-section">
+    <div class="player-content">
+      <!-- Imagen del álbum -->
+      <div class="album-artwork">
+        <img [src]="getAlbumImage()" [alt]="currentTrack?.name || 'Album artwork'" />
+      </div>
+
+      <!-- Controles de reproducción -->
+      <div class="player-controls">
+        <button 
+          class="control-btn" 
+          (click)="playPrevious()"
+          [disabled]="currentTrackIndex <= 0"
+          title="Anterior">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+          </svg>
+        </button>
+
+        <button 
+          class="control-btn play-btn" 
+          (click)="togglePlayPause()"
+          [class.playing]="isPlaying"
+          title="Reproducir/Pausar">
+          <svg *ngIf="!isPlaying" viewBox="0 0 24 24" width="32" height="32">
+            <path fill="currentColor" d="M8 5v14l11-7z"/>
+          </svg>
+          <svg *ngIf="isPlaying" viewBox="0 0 24 24" width="32" height="32">
+            <path fill="currentColor" d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+          </svg>
+        </button>
+
+        <button 
+          class="control-btn" 
+          (click)="playNext()"
+          [disabled]="currentTrackIndex >= searchResults.length - 1 || searchResults.length === 0"
+          title="Siguiente">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M16 18h2V6h-2zm-11-7l8.5-6v12z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Información de la canción -->
+      <div class="track-info" *ngIf="currentTrack">
+        <h1 class="track-title">{{ currentTrack.name }}</h1>
+        <p class="track-artist">{{ getArtistsNames(currentTrack) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de búsqueda (Derecha) -->
+  <div class="search-panel">
+    <div class="search-header">
+      <h2>Buscar canciones</h2>
+      
+      <!-- Barra de búsqueda -->
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
+          <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery"
+          (keypress)="onSearchKeyPress($event)"
+          placeholder="Artista, canción o álbum..."
+          class="search-input" />
+        <button 
+          class="search-btn" 
+          (click)="searchTracks()"
+          [disabled]="!searchQuery.trim() || isSearching">
+          Buscar
+        </button>
+      </div>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div class="loading" *ngIf="isSearching">
+      <div class="spinner"></div>
+      <p>Buscando...</p>
+    </div>
+
+    <!-- Mensaje cuando no hay resultados -->
+    <div class="no-results" *ngIf="noResults && !isSearching">
+      <svg viewBox="0 0 24 24" width="48" height="48">
+        <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+      <p>No se encontraron canciones.</p>
+      <small>Intenta con otros términos de búsqueda</small>
+    </div>
+
+    <!-- Lista de resultados -->
+    <div class="results-list" *ngIf="searchResults.length > 0 && !isSearching">
+      <h3>Resultados</h3>
+      <div 
+        class="result-item" 
+        *ngFor="let track of searchResults; let i = index"
+        (click)="selectTrack(track, i)"
+        [class.active]="currentTrack?.id === track.id">
+        
+        <img 
+          [src]="getTrackThumbnail(track)" 
+          [alt]="track.name"
+          class="result-thumbnail" />
+        
+        <div class="result-info">
+          <p class="result-title">{{ track.name }}</p>
+          <p class="result-artist">{{ getArtistsNames(track) }}</p>
+        </div>
+
+        <!-- Indicador de reproducción -->
+        <div class="now-playing-indicator" *ngIf="currentTrack?.id === track.id && isPlaying">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
