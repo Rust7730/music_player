@@ -13,6 +13,10 @@ export class MusicPlayerComponent {
   isPlaying: boolean = false;
   // Elemento de audio para reproducir previews
   private audio: HTMLAudioElement | null = null;
+  // Estado temporal de reproducción
+  currentTime: number = 0;
+  duration: number = 0;
+  volume: number = 1; // 0..1
   
   // Estado de búsqueda
   searchQuery: string = '';
@@ -30,6 +34,7 @@ export class MusicPlayerComponent {
     // Asegurarse de pausar y limpiar el audio al destruir el componente
     if (this.audio) {
       try { this.audio.pause(); } catch (e) { /* ignore */ }
+      this.removeAudioListeners();
       this.audio = null;
     }
   }
@@ -106,7 +111,19 @@ export class MusicPlayerComponent {
     }
 
     if (track.preview_url) {
+      // limpiar audio antiguo
+      if (this.audio) {
+        this.removeAudioListeners();
+        try { this.audio.pause(); } catch (e) { /* ignore */ }
+        this.audio = null;
+      }
+
       this.audio = new Audio(track.preview_url);
+      this.audio.volume = this.volume;
+      // listeners para progreso y duración
+      this.audio.addEventListener('timeupdate', this.onTimeUpdate);
+      this.audio.addEventListener('loadedmetadata', this.onLoadedMetadata);
+
       this.audio.play().then(() => {
         this.isPlaying = true;
       }).catch((err) => {
@@ -115,6 +132,8 @@ export class MusicPlayerComponent {
       });
     } else {
       this.isPlaying = false;
+      this.currentTime = 0;
+      this.duration = 0;
     }
   }
 
@@ -137,6 +156,55 @@ export class MusicPlayerComponent {
       // Si no hay preview, alternar sólo el estado visual
       this.isPlaying = !this.isPlaying;
     }
+  }
+
+  // Handler para actualizar tiempo
+  private onTimeUpdate = () => {
+    if (!this.audio) return;
+    this.currentTime = Math.floor(this.audio.currentTime);
+  }
+
+  // Cuando metadata está lista (duración)
+  private onLoadedMetadata = () => {
+    if (!this.audio) return;
+    this.duration = Math.floor(this.audio.duration || 0);
+  }
+
+  // Quitar listeners del audio para evitar fugas
+  private removeAudioListeners(): void {
+    if (!this.audio) return;
+    try {
+      this.audio.removeEventListener('timeupdate', this.onTimeUpdate);
+      this.audio.removeEventListener('loadedmetadata', this.onLoadedMetadata);
+    } catch (e) { /* ignore */ }
+  }
+
+  // Seek desde la barra de progreso
+  onSeek(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const val = Number(target.value);
+    this.currentTime = val;
+    if (this.audio) {
+      try { this.audio.currentTime = val; } catch (e) { /* ignore */ }
+    }
+  }
+
+  // Set volume desde control
+  setVolume(event: Event): void {
+    const t = event.target as HTMLInputElement;
+    const v = Number(t.value);
+    this.volume = isNaN(v) ? 1 : v;
+    if (this.audio) {
+      try { this.audio.volume = this.volume; } catch (e) { /* ignore */ }
+    }
+  }
+
+  // Formatea segundos a mm:ss
+  formatTime(totalSeconds: number): string {
+    if (!totalSeconds || totalSeconds <= 0) return '0:00';
+    const s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+    const m = Math.floor(totalSeconds / 60);
+    return `${m}:${s}`;
   }
 
   /**
