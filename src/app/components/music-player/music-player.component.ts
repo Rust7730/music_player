@@ -122,13 +122,8 @@ export class MusicPlayerComponent {
    * Reproduce la siguiente canción
    */
   playNext(): void {
-    // [SIM EXPERIMENT 5] Wrap to the start when reaching the end (circular next)
-    if (this.searchResults.length > 0) {
-      if (this.currentTrackIndex < this.searchResults.length - 1) {
-        this.currentTrackIndex++;
-      } else {
-        this.currentTrackIndex = 0; // wrap
-      }
+    if (this.searchResults.length > 0 && this.currentTrackIndex < this.searchResults.length - 1) {
+      this.currentTrackIndex++;
       this.selectTrack(this.searchResults[this.currentTrackIndex], this.currentTrackIndex);
     }
   }
