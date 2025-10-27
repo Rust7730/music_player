@@ -1,11 +1,25 @@
 import { Component } from '@angular/core';
 import { SpotifyService } from '../../services/spotify.service';
 import { Track } from '../../models/track.model';
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'timeFormat'
+})
+export class TimeFormatPipe implements PipeTransform {
+  transform(seconds: number): string {
+    if (!seconds) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return minutes + ':' + remainingSeconds.toString().padStart(2, '0');
+  }
+}
 
 @Component({
   selector: 'app-music-player',
   templateUrl: './music-player.component.html',
-  styleUrls: ['./music-player.component.css']
+  styleUrls: ['./music-player.component.css'],
+  providers: [TimeFormatPipe]
 })
 export class MusicPlayerComponent {
   // Estado del reproductor
