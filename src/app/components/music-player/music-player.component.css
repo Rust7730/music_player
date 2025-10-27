@@ -24,14 +24,14 @@
 
 .player-content {
   text-align: center;
-  max-width: 500px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
 }
 
 /* Imagen del álbum circular */
 .album-artwork {
   margin-bottom: 40px;
-}
+  transform: scale(1.1) rotate(360deg);
 
 .album-artwork img {
   width: 300px;
@@ -44,8 +44,9 @@
 }
 
 .album-artwork img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7),
+  background: #1ed760;
+  transform: scale(1.15) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.6);
               0 0 0 8px rgba(29, 185, 84, 0.2);
 }
 
@@ -91,6 +92,8 @@
   cursor: not-allowed;
   border-color: #555;
   color: #555;
+  transform: none;
+  box-shadow: none;
 }
 
 .control-btn.play-btn {
