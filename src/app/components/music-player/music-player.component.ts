@@ -47,7 +47,29 @@ export class MusicPlayerComponent {
       this.setupAudioListeners();
   }
 
-    private setupAudioListeners(): void {
+    // Función para cambiar volumen con fade
+  private fadeVolume(targetVolume: number, duration: number = 1000): void {
+    if (!this.audioElement) return;
+    
+    const startVolume = this.audioElement.volume;
+    const volumeDiff = targetVolume - startVolume;
+    const steps = 20;
+    const stepTime = duration / steps;
+    
+    let currentStep = 0;
+    
+    const fadeInterval = setInterval(() => {
+      currentStep++;
+      if (currentStep <= steps) {
+        const progress = currentStep / steps;
+        this.audioElement!.volume = startVolume + (volumeDiff * progress);
+      } else {
+        clearInterval(fadeInterval);
+      }
+    }, stepTime);
+  }
+
+  private setupAudioListeners(): void {
       if (this.audioElement) {
         this.audioElement.ontimeupdate = () => {
           if (this.audioElement) {
