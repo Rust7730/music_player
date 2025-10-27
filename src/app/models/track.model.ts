@@ -1,9 +1,8 @@
-
 export interface Track {
   id: string;
   name: string;
   artists: Artist[];
-  album: Album;
+  album: AlbumInfo; // Una canción contiene información básica del álbum
   preview_url: string | null;
   uri: string;
 }
@@ -13,24 +12,32 @@ export interface Artist {
   name: string;
 }
 
+// Esta interfaz representa la información básica de un álbum,
+// que es lo que viene dentro de un objeto Track.
+export interface AlbumInfo {
+  id: string;
+  name: string;
+  images: SpotifyImage[];
+}
+
 export interface Album {
   id: string;
   name: string;
-  images: Image[];
+  images: SpotifyImage[];
+  artists: Artist[];
+  tracks: {
+    items: Track[];
+  };
 }
 
-export interface Image {
+export interface SpotifyImage {
   url: string;
   height: number;
   width: number;
 }
 
-/**
- * Respuesta de la API de Spotify para búsqueda de canciones
- */
 export interface SpotifySearchResponse {
   tracks: {
     items: Track[];
-    total: number;
   };
 }

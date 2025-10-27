@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, from, switchMap, catchError, of, tap } from 'rxjs';
-import { SpotifySearchResponse } from '../models/track.model';
+import { Observable, from, switchMap, catchError, of, tap, map } from 'rxjs';
+import { SpotifySearchResponse, Album, Track } from '../models/track.model';
 
 @Injectable({
   providedIn: 'root'
@@ -62,7 +62,7 @@ export class SpotifyService {
           'Authorization': `Bearer ${token}`
         });
 
-        const url = `${this.API_URL}/search?q=${encodeURIComponent(query)}&type=track&limit=5`;
+        const url = `${this.API_URL}/search?q=${encodeURIComponent(query)}&type=track&limit=45`;
         
         return this.http.get<SpotifySearchResponse>(url, { headers });
       }),
@@ -73,6 +73,34 @@ export class SpotifyService {
           this.accessToken = null;
           this.tokenExpirationTime = 0;
         }
+        throw error;
+      })
+    );
+  }
+
+  getAlbum(albumId: string): Observable<Album> {
+    return this.getAccessToken().pipe(
+      switchMap(token => {
+        const headers = new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        });
+        const url = `${this.API_URL}/albums/${albumId}`;
+        return this.http.get<Album>(url, { headers });
+      }),
+      map(album => {
+        const albumInfoForTrack = {
+          id: album.id,
+          name: album.name,
+          images: album.images
+        };
+        album.tracks.items = album.tracks.items.map(track => ({
+          ...track,
+          album: albumInfoForTrack
+        }));
+        return album;
+      }),
+      catchError(error => {
+        console.error(` Error al obtener el álbum ${albumId}:`, error);
         throw error;
       })
     );
