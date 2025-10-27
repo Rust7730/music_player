@@ -1,6 +1,4 @@
-/* ========================================
-   CONTENEDOR PRINCIPAL
-   ======================================== */
+
 .music-player-container {
   display: flex;
   height: 100vh;
@@ -10,9 +8,6 @@
   overflow: hidden;
 }
 
-/* ========================================
-   SECCIÓN DEL REPRODUCTOR (70%)
-   ======================================== */
 .player-section {
   flex: 0 0 70%;
   display: flex;
@@ -24,14 +19,14 @@
 
 .player-content {
   text-align: center;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 500px;
   width: 100%;
 }
 
 /* Imagen del álbum circular */
 .album-artwork {
   margin-bottom: 40px;
-  transform: scale(1.1) rotate(360deg);
+}
 
 .album-artwork img {
   width: 300px;
@@ -44,9 +39,8 @@
 }
 
 .album-artwork img:hover {
-  background: #1ed760;
-  transform: scale(1.15) translateY(-2px);
-  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.6);
+  transform: scale(1.05);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7),
               0 0 0 8px rgba(29, 185, 84, 0.2);
 }
 
@@ -92,8 +86,6 @@
   cursor: not-allowed;
   border-color: #555;
   color: #555;
-  transform: none;
-  box-shadow: none;
 }
 
 .control-btn.play-btn {
@@ -142,9 +134,6 @@
   font-weight: 400;
 }
 
-/* ========================================
-   PANEL DE BÚSQUEDA (30%)
-   ======================================== */
 .search-panel {
   flex: 0 0 30%;
   background: #181818;
@@ -206,58 +195,6 @@
   box-shadow: 0 0 0 3px rgba(29,185,84,0.12);
   border-radius: 20px;
 }
-
-/* Barra de progreso */
-.progress-container {
-  margin-top: 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.progress-bar {
-  width: 100%;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 6px;
-  background: #333;
-  border-radius: 6px;
-  outline: none;
-}
-
-.progress-bar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  background: #1DB954;
-  border-radius: 50%;
-  box-shadow: 0 0 6px rgba(29,185,84,0.6);
-}
-
-.time-info {
-  color: #b3b3b3;
-  font-size: 12px;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.time-info .sep { color: #737373; }
-
-/* Volume control */
-.volume-control {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-}
-
-.volume-control input[type="range"] {
-  width: 80px;
-  margin-left: 8px;
-}
-
-.sr-only { position: absolute; left: -9999px; }
 
 .search-btn {
   background: #1DB954;
@@ -462,9 +399,6 @@
   background: #737373;
 }
 
-/* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
 @media (max-width: 1024px) {
   .music-player-container {
     flex-direction: column;

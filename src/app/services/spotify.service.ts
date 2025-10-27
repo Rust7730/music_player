@@ -48,7 +48,7 @@ export class SpotifyService {
       }),
       switchMap(response => of(response.access_token)),
       catchError(error => {
-        console.error('❌ Error al obtener el token de Spotify:', error);
+        console.error(' Error al obtener el token de Spotify:', error);
         console.error('Verifica que CLIENT_ID y CLIENT_SECRET sean correctos');
         throw error;
       })

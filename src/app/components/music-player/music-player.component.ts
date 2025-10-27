@@ -12,6 +12,12 @@ export class MusicPlayerComponent {
   currentTrack: Track | null = null;
   isPlaying: boolean = false;
   
+  // Variables para el tiempo y progreso
+  currentTime: number = 0;
+  duration: number = 0;
+  progressPercentage: number = 0;
+  private audioElement: HTMLAudioElement | null = null;
+  
   // Estado de búsqueda
   searchQuery: string = '';
   searchResults: Track[] = [];
@@ -22,11 +28,34 @@ export class MusicPlayerComponent {
   constructor(private spotifyService: SpotifyService) {
     // Configurar canción por defecto
     this.setDefaultTrack();
+      // Inicializar audio element
+      this.audioElement = new Audio();
+      this.setupAudioListeners();
   }
 
-  /**
-   * Configura una canción de ejemplo por defecto
-   */
+    private setupAudioListeners(): void {
+      if (this.audioElement) {
+        this.audioElement.ontimeupdate = () => {
+          if (this.audioElement) {
+            this.currentTime = this.audioElement.currentTime;
+            this.progressPercentage = (this.currentTime / this.duration) * 100;
+          }
+        };
+      
+        this.audioElement.onloadedmetadata = () => {
+          if (this.audioElement) {
+            this.duration = this.audioElement.duration;
+          }
+        };
+
+        this.audioElement.onended = () => {
+          this.isPlaying = false;
+          this.currentTime = 0;
+          this.progressPercentage = 0;
+        };
+      }
+    }
+ 
   private setDefaultTrack(): void {
     this.currentTrack = {
       id: 'default',
@@ -48,9 +77,6 @@ export class MusicPlayerComponent {
     };
   }
 
-  /**
-   * Realiza la búsqueda de canciones
-   */
   searchTracks(): void {
     if (!this.searchQuery.trim()) {
       return;
@@ -74,27 +100,19 @@ export class MusicPlayerComponent {
     });
   }
 
-  /**
-   * Maneja el evento de Enter en el input de búsqueda
-   */
+  
   onSearchKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.searchTracks();
     }
   }
 
-  /**
-   * Selecciona una canción de los resultados
-   */
   selectTrack(track: Track, index: number): void {
     this.currentTrack = track;
     this.currentTrackIndex = index;
     this.isPlaying = true;
   }
 
-  /**
-   * Alterna entre reproducir y pausar
-   */
   togglePlayPause(): void {
     if (this.currentTrack) {
       // [SIM EXPERIMENT 1] Log and apply alternative toggle behaviour for testing
@@ -108,9 +126,6 @@ export class MusicPlayerComponent {
     }
   }
 
-  /**
-   * Reproduce la canción anterior
-   */
   playPrevious(): void {
     if (this.searchResults.length > 0 && this.currentTrackIndex > 0) {
       this.currentTrackIndex--;
@@ -118,9 +133,7 @@ export class MusicPlayerComponent {
     }
   }
 
-  /**
-   * Reproduce la siguiente canción
-   */
+ 
   playNext(): void {
     if (this.searchResults.length > 0 && this.currentTrackIndex < this.searchResults.length - 1) {
       this.currentTrackIndex++;
@@ -128,9 +141,6 @@ export class MusicPlayerComponent {
     }
   }
 
-  /**
-   * Obtiene la imagen del álbum
-   */
   getAlbumImage(): string {
     if (this.currentTrack && this.currentTrack.album.images.length > 0) {
       return this.currentTrack.album.images[0].url;
@@ -138,17 +148,11 @@ export class MusicPlayerComponent {
     return 'https://via.placeholder.com/300x300/1DB954/FFFFFF?text=No+Image';
   }
 
-  /**
-   * Obtiene los nombres de los artistas
-   */
   getArtistsNames(track: Track): string {
     // [SIM EXPERIMENT 7] Return artist names in uppercase for the experiment
     return track.artists.map(artist => artist.name.toUpperCase()).join(', ');
   }
 
-  /**
-   * Obtiene la miniatura del álbum para la lista
-   */
   getTrackThumbnail(track: Track): string {
     if (track.album.images.length > 0) {
       // Usa la imagen más pequeña disponible

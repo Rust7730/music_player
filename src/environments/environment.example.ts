@@ -1,5 +1,4 @@
-// Este es un archivo de EJEMPLO para mostrar cómo usar variables de entorno
-// NO uses este archivo directamente en producción
+
 
 export const environment = {
   production: false,

@@ -1,6 +1,4 @@
-/**
- * Interfaz para representar una canción de Spotify
- */
+
 export interface Track {
   id: string;
   name: string;

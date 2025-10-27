@@ -1,5 +1,5 @@
 <div class="music-player-container">
-  <!-- Sección del reproductor principal (Izquierda) -->
+ 
   <div class="player-section">
     <div class="player-content">
       <!-- Imagen del álbum -->
@@ -7,7 +7,7 @@
         <img [src]="getAlbumImage()" [alt]="currentTrack?.name || 'Album artwork'" />
       </div>
 
-      <!-- Controles de reproducción -->
+    
       <div class="player-controls">
         <button 
           class="control-btn" 
@@ -51,7 +51,6 @@
     </div>
   </div>
 
-  <!-- Panel de búsqueda (Derecha) -->
   <div class="search-panel">
     <div class="search-header">
       <h2>Buscar canciones</h2>
@@ -75,14 +74,10 @@
         </button>
       </div>
     </div>
-
-    <!-- Indicador de carga -->
     <div class="loading" *ngIf="isSearching">
       <div class="spinner"></div>
       <p>Buscando...</p>
     </div>
-
-    <!-- Mensaje cuando no hay resultados -->
     <div class="no-results" *ngIf="noResults && !isSearching">
       <svg viewBox="0 0 24 24" width="48" height="48">
         <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
@@ -91,7 +86,7 @@
       <small>Intenta con otros términos de búsqueda</small>
     </div>
 
-    <!-- Lista de resultados -->
+
     <div class="results-list" *ngIf="searchResults.length > 0 && !isSearching">
       <h3>Resultados</h3>
       <div 
@@ -110,7 +105,7 @@
           <p class="result-artist">{{ getArtistsNames(track) }}</p>
         </div>
 
-        <!-- Indicador de reproducción -->
+   
         <div class="now-playing-indicator" *ngIf="currentTrack?.id === track.id && isPlaying">
           <div class="bar"></div>
           <div class="bar"></div>
