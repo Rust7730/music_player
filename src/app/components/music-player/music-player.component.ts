@@ -25,6 +25,7 @@ export class MusicPlayerComponent {
   // Estado del reproductor
   currentTrack: Track | null = null;
   isPlaying: boolean = false;
+  isShuffleMode: boolean = false;
   
   // Variables para el tiempo y progreso
   currentTime: number = 0;
