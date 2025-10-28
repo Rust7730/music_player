@@ -39,7 +39,7 @@
 
       <div class="track-info" *ngIf="currentTrack">
         <h1 class="track-title">{{ currentTrack.name }}</h1>
-        <p class="track-artist">{{ getArtistsNames(currentTrack) }}</p>
+        <p class="track-artist">{{ getArtistsNames({ artists: currentTrack.artists }) }}</p>
       </div>
     </div>
 
@@ -74,7 +74,7 @@
           <div class="top-result-card" (click)="selectTrack(topSearchResult, -1)">
             <img [src]="topSearchResult.album.images[0]?.url" [alt]="topSearchResult.name" class="top-result-img">
             <h4 class="top-result-title">{{ topSearchResult.name }}</h4>
-            <p class="top-result-artist">{{ getArtistsNames(topSearchResult) }}</p>
+            <p class="top-result-artist">{{ getArtistsNames({ artists: topSearchResult.artists }) }}</p>
             <div class="play-icon-overlay">
               <svg viewBox="0 0 24 24" width="48" height="48"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
             </div>
@@ -93,10 +93,36 @@
             
             <div class="result-info">
               <p class="result-title">{{ track.name }}</p>
-              <p class="result-artist">{{ getArtistsNames(track) }}</p>
+              <p class="result-artist">{{ getArtistsNames({ artists: track.artists }) }}</p>
             </div>
           </div>
         </div>
+
+        <!-- Sección de Artistas -->
+        <div class="artist-section" *ngIf="searchPageArtists.length > 0">
+          <h3>Artistas</h3>
+          <div class="card-container">
+            <div class="artist-card" *ngFor="let artist of searchPageArtists">
+              <img [src]=" getAlbumImage()" [alt]="artist.name" class="artist-image">
+              <h4>{{ artist.name }}</h4>
+              <p>Artista</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de Álbumes -->
+        <div class="album-section" *ngIf="searchPageAlbums.length > 0">
+          <h3>Álbumes</h3>
+          <div class="card-container">
+            <div class="album-card" *ngFor="let album of searchPageAlbums">
+              <img [src]="album.images[0]?.url" [alt]="album.name">
+              <h4>{{ album.name }}</h4>
+              <!-- El método getArtistsNames ahora funciona también para álbumes -->
+              <p>{{ getArtistsNames(album) }}</p> 
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -138,7 +164,7 @@
         
         <div class="result-info">
           <p class="result-title">{{ track.name }}</p>
-          <p class="result-artist">{{ getArtistsNames(track) }}</p>
+          <p class="result-artist">{{ getArtistsNames({ artists: track.artists }) }}</p>
         </div>
 
    

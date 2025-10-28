@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SpotifyService } from '../../services/spotify.service';
-import { Track, Album } from '../../models/track.model';
+import { Track, Album, AlbumInfo, Artist } from '../../models/track.model';
 import { Pipe, PipeTransform } from '@angular/core';
 
 
@@ -37,6 +37,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   isShowingSearchResults: boolean = false; // El "interruptor" para cambiar de vista
   searchPageResults: Track[] = []; // Resultados para la página de búsqueda
   topSearchResult: Track | null = null; // El resultado principal
+  searchPageAlbums: AlbumInfo[] = []; // Resultados de álbumes
+  searchPageArtists: Artist[] = []; // Resultados de artistas
 
   // --- CAMBIO: Propiedades para la BÚSQUEDA y la LISTA DE LA DERECHA ---
   searchQuery: string = '';
@@ -62,8 +64,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   private loadInitialMusic(): void {
     // Este método ahora solo carga la lista de la derecha (la playlist inicial)
     const initialPlaylistQuery = 'album:Porfiado artist:"El Cuarteto de Nos"';
-    this.isSearching = true; // Muestra el spinner de carga
-    this.spotifyService.searchTracks(initialPlaylistQuery).subscribe({next: (response) => {
+    // Usamos el servicio de búsqueda general, aunque solo nos interesan las canciones aquí
+    this.spotifyService.search(initialPlaylistQuery).subscribe({next: (response) => {
         // 3. Asigna los resultados a la lista de la derecha
         this.searchResults = response.tracks.items;
         this.noResults = this.searchResults.length === 0;
@@ -156,17 +158,24 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     this.noResults = false;
     this.isShowingSearchResults = true; // ¡Encendemos el interruptor!
     
-    this.spotifyService.searchTracks(this.searchQuery).subscribe({
+    this.spotifyService.search(this.searchQuery).subscribe({
       next: (response) => {
         const tracks = response.tracks.items;
-        this.noResults = tracks.length === 0;
+        const albums = response.albums.items;
+        const artists = response.artists.items;
+
+        this.noResults = tracks.length === 0 && albums.length === 0 && artists.length === 0;
 
         if (!this.noResults) {
           this.topSearchResult = tracks[0]; // El primer resultado es el principal
           this.searchPageResults = tracks.slice(1, 5); // Mostramos los siguientes 4 como lista
+          this.searchPageAlbums = albums.slice(0, 5);
+          this.searchPageArtists = artists.slice(0, 5);
         } else {
           this.topSearchResult = null;
           this.searchPageResults = [];
+          this.searchPageAlbums = [];
+          this.searchPageArtists = [];
         }
 
         this.isSearching = false;
@@ -271,9 +280,11 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     return 'https://via.placeholder.com/300x300/1DB954/FFFFFF?text=No+Image';
   }
 
-  getArtistsNames(track: Track): string {
-    // [SIM EXPERIMENT 7] Return artist names in uppercase for the experiment
-    return track.artists.map(artist => artist.name).join(', ');
+  getArtistsNames(item: { artists?: Artist[] }): string {
+    if (!item || !item.artists) {
+      return '';
+    }
+    return item.artists.map(artist => artist.name).join(', ');
   }
 
   getTrackThumbnail(track: Track): string {

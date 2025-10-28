@@ -527,6 +527,76 @@
   background: #737373;
 }
 
+/* --- ESTILOS PARA TARJETAS DE ARTISTAS Y ÁLBUMES --- */
+
+.artist-section, .album-section {
+  margin-top: 40px;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.artist-card, .album-card {
+  background: #181818;
+  padding: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  text-align: left;
+}
+
+.artist-card:hover, .album-card:hover {
+  background: #282828;
+}
+
+.artist-card img, .album-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Mantiene la imagen cuadrada */
+  object-fit: cover;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.artist-card img {
+  border-radius: 50%; /* Círculo para artistas */
+}
+
+.album-card img {
+  border-radius: 8px; /* Cuadrado para álbumes */
+}
+
+.artist-card h4, .album-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-card p, .album-card p {
+  font-size: 13px;
+  color: #b3b3b3;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ajustes para la lista de canciones en la vista de búsqueda */
+.songs-list {
+  margin-top: 30px;
+}
+
+.songs-list .result-item {
+  background: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 @media (max-width: 1024px) {
   .music-player-container {
     flex-direction: column;

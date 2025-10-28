@@ -10,6 +10,7 @@ export interface Track {
 export interface Artist {
   id: string;
   name: string;
+  images?: SpotifyImage[]; // Los artistas en la búsqueda tienen imágenes
 }
 
 // Esta interfaz representa la información básica de un álbum,
@@ -17,6 +18,7 @@ export interface Artist {
 export interface AlbumInfo {
   id: string;
   name: string;
+  artists?: Artist[]; // Los álbumes en la búsqueda tienen artistas
   images: SpotifyImage[];
 }
 
@@ -39,5 +41,11 @@ export interface SpotifyImage {
 export interface SpotifySearchResponse {
   tracks: {
     items: Track[];
+  };
+  albums: {
+    items: AlbumInfo[];
+  };
+  artists: {
+    items: Artist[];
   };
 }

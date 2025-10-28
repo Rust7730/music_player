@@ -55,14 +55,14 @@ export class SpotifyService {
     );
   }
 
-  searchTracks(query: string): Observable<SpotifySearchResponse> {
+  search(query: string): Observable<SpotifySearchResponse> {
     return this.getAccessToken().pipe(
       switchMap(token => {
         const headers = new HttpHeaders({
           'Authorization': `Bearer ${token}`
         });
 
-        const url = `${this.API_URL}/search?q=${encodeURIComponent(query)}&type=track&limit=45`;
+        const url = `${this.API_URL}/search?q=${encodeURIComponent(query)}&type=track,album,artist&limit=10`;
         
         return this.http.get<SpotifySearchResponse>(url, { headers });
       }),
