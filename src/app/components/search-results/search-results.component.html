@@ -1,0 +1,60 @@
+<div class="search-results-page">
+  <div *ngIf="isLoading" class="loading-indicator">Cargando...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!isLoading && !error && results">
+    <h1>Resultados para "{{ query }}"</h1>
+
+    <div class="top-result-section" *ngIf="topResult">
+      <h2>Resultado principal</h2>
+      <div class="top-result-card">
+        <img [src]="getTopResultImage()" [alt]="getTopResultName()">
+        <h3>{{ getTopResultName() }}</h3>
+        <p>
+          <span>{{ getTopResultType() }}</span>
+          <span *ngIf="getTopResultArtist()"> • {{ getTopResultArtist() }}</span>
+        </p>
+        <button *ngIf="isTrack(topResult)" class="play-button">▶</button> 
+      </div>
+    </div>
+
+    <div class="songs-section" *ngIf="results?.tracks?.items?.length">
+      <h2>Canciones</h2>
+      <ul>
+        <li *ngFor="let track of results.tracks?.items">
+          <img [src]="getTrackThumbnail(track)" alt="{{track.name}}">
+          <div class="info">
+            <p class="title">{{ track.name }}</p>
+            <p class="artist">{{ getArtistNames(track) }}</p>
+          </div>
+        
+      </ul>
+    </div>
+
+    <div class="albums-section" *ngIf="results?.albums?.items?.length">
+      <h2>Álbumes</h2>
+      <div class="card-container">
+         <div class="album-card" *ngFor="let album of results.albums?.items">
+            <img [src]="getAlbumImage(album)" alt="{{album.name}}">
+             <h4>{{ album.name }}</h4>
+             <p>{{ getArtistNames(album) }}</p>
+         </div>
+      </div>
+    </div>
+
+    <div class="artists-section" *ngIf="results?.artists?.items?.length">
+      <h2>Artistas</h2>
+       <div class="card-container">
+         <div class="artist-card" *ngFor="let artist of results.artists?.items">
+            <img [src]="getArtistImage(artist)" alt="{{artist.name}}" class="artist-image"> <h4>{{ artist.name }}</h4>
+             <p>Artista</p>
+         </div>
+      </div>
+    </div>
+
+    </div>
+
+   <div *ngIf="!isLoading && !error && !topResult && !results?.tracks?.items?.length && !results?.albums?.items?.length && !results?.artists?.items?.length">
+      <p>No se encontraron resultados para "{{ query }}".</p>
+   </div>
+</div>

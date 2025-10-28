@@ -33,13 +33,19 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   progressPercentage: number = 0;
   private audio: HTMLAudioElement | null = null;
   
-  // Estado de búsqueda
+  // --- CAMBIO: Propiedades para la VISTA DE BÚSQUEDA ---
+  isShowingSearchResults: boolean = false; // El "interruptor" para cambiar de vista
+  searchPageResults: Track[] = []; // Resultados para la página de búsqueda
+  topSearchResult: Track | null = null; // El resultado principal
+
+  // --- CAMBIO: Propiedades para la BÚSQUEDA y la LISTA DE LA DERECHA ---
   searchQuery: string = '';
   searchResults: Track[] = [];
   isSearching: boolean = false;
   noResults: boolean = false;
   currentTrackIndex: number = -1;
 
+  // Término para cargar la lista de la derecha al inicio
   private initialSearchTerm: string = 'El Cuarteto de Nos';
 
   constructor(private spotifyService: SpotifyService) {
@@ -50,13 +56,14 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Al iniciar el componente, cargamos el álbum por defecto.
-  
     this.loadInitialMusic()
   }
+
   private loadInitialMusic(): void {
-    this.searchQuery = this.initialSearchTerm;
+    // Este método ahora solo carga la lista de la derecha (la playlist inicial)
+    const initialPlaylistQuery = 'album:Porfiado artist:"El Cuarteto de Nos"';
     this.isSearching = true; // Muestra el spinner de carga
-    this.spotifyService.searchTracks(this.searchQuery).subscribe({next: (response) => {
+    this.spotifyService.searchTracks(initialPlaylistQuery).subscribe({next: (response) => {
         // 3. Asigna los resultados a la lista de la derecha
         this.searchResults = response.tracks.items;
         this.noResults = this.searchResults.length === 0;
@@ -64,11 +71,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
         // 4. Si se encontraron resultados...
         if (!this.noResults) {
           // ...selecciona la primera canción (índice 0)
-          this.selectTrack(this.searchResults[0], 0);
-          
-          // ...y asegúrate de que no se reproduzca automáticamente.
-          // Esto hará que se vea seleccionada (verde) pero pausada.
-          this.isPlaying = false; 
+          // y deshabilita el autoplay.
+          this.selectTrack(this.searchResults[0], 0, false);
         } else {
           // Si no hay resultados, carga el placeholder
           this.setDefaultTrack();
@@ -144,23 +148,33 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
   searchTracks(): void {
     if (!this.searchQuery.trim()) {
+      this.isShowingSearchResults = false; // Si la búsqueda está vacía, vuelve al reproductor
       return;
     }
 
     this.isSearching = true;
     this.noResults = false;
+    this.isShowingSearchResults = true; // ¡Encendemos el interruptor!
     
     this.spotifyService.searchTracks(this.searchQuery).subscribe({
       next: (response) => {
-        this.searchResults = response.tracks.items;
-        this.noResults = this.searchResults.length === 0;
+        const tracks = response.tracks.items;
+        this.noResults = tracks.length === 0;
+
+        if (!this.noResults) {
+          this.topSearchResult = tracks[0]; // El primer resultado es el principal
+          this.searchPageResults = tracks.slice(1, 5); // Mostramos los siguientes 4 como lista
+        } else {
+          this.topSearchResult = null;
+          this.searchPageResults = [];
+        }
+
         this.isSearching = false;
       },
       error: (error) => {
         console.error('Error al buscar canciones:', error);
         this.isSearching = false;
         this.noResults = true;
-        this.searchResults = [];
       }
     });
   }
@@ -172,7 +186,17 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
+  // --- CAMBIO AÑADIDO: Método para volver a la vista del reproductor ---
+  public showPlayerView(): void {
+    this.isShowingSearchResults = false;
+  }
+
   selectTrack(track: Track, index: number, autoplay: boolean = true): void {
+    // --- CAMBIO: Al seleccionar una canción, siempre volvemos a la vista del reproductor ---
+    if (this.isShowingSearchResults) {
+      this.isShowingSearchResults = false;
+    }
+
     this.currentTrack = track;
     this.currentTrackIndex = index;
     this.currentTime = 0;

@@ -1,22 +1,20 @@
 <div class="music-player-container">
  
   <div class="player-section">
-    <div class="player-content">
-      <!-- Imagen del álbum -->
+    <!-- VISTA DEL REPRODUCTOR (se muestra por defecto) -->
+    <div *ngIf="!isShowingSearchResults" class="player-content">
       <div class="album-artwork">
         <img [src]="getAlbumImage()" [alt]="currentTrack?.name || 'Album artwork'" />
       </div>
 
-    
       <div class="player-controls">
         <button 
           class="control-btn" 
           (click)="playPrevious()"
           [disabled]="currentTrackIndex <= 0"
           title="Anterior">
-          <svg viewBox="0 0 24 24" width="24" height="24">
-            <path fill="currentColor" d="M16 18h2V6h-2zm-3.5-6l-8.5-6v12z"/>
-          </svg>
+          <!-- Ícono de anterior -->
+          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16 18h2V6h-2zm-3.5-6l-8.5-6v12z"/></svg>
         </button>
 
         <button 
@@ -24,12 +22,9 @@
           (click)="togglePlayPause()"
           [class.playing]="isPlaying"
           title="Reproducir/Pausar">
-          <svg *ngIf="!isPlaying" viewBox="0 0 24 24" width="32" height="32">
-            <path fill="currentColor" d="M8 5v14l11-7z"/>
-          </svg>
-          <svg *ngIf="isPlaying" viewBox="0 0 24 24" width="32" height="32">
-            <path fill="currentColor" d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-          </svg>
+          <!-- Íconos de play/pausa -->
+          <svg *ngIf="!isPlaying" viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <svg *ngIf="isPlaying" viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
         </button>
 
         <button 
@@ -37,29 +32,82 @@
           (click)="playNext()"
           [disabled]="currentTrackIndex >= searchResults.length - 1 || searchResults.length === 0"
           title="Siguiente">
-          <svg viewBox="0 0 24 24" width="24" height="24">
-            <path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5-6v12z"/>
-          </svg>
+          <!-- Ícono de siguiente -->
+          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5-6v12z"/></svg>
         </button>
       </div>
 
-      <!-- Información de la canción -->
       <div class="track-info" *ngIf="currentTrack">
         <h1 class="track-title">{{ currentTrack.name }}</h1>
         <p class="track-artist">{{ getArtistsNames(currentTrack) }}</p>
+      </div>
+    </div>
+
+    <!-- VISTA DE RESULTADOS DE BÚSQUEDA (se muestra al buscar) -->
+    <div *ngIf="isShowingSearchResults" class="search-results-view">
+      <!-- CAMBIO AÑADIDO: Botón de Home -->
+      <div class="search-view-header">
+        <button class="home-btn" (click)="showPlayerView()" title="Volver al reproductor">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span>Home</span>
+        </button>
+      </div>
+
+      <!-- Indicador de carga para la vista de búsqueda -->
+      <div class="loading" *ngIf="isSearching">
+        <div class="spinner"></div>
+        <p>Buscando...</p>
+      </div>
+
+      <!-- Mensaje de no resultados para la vista de búsqueda -->
+      <div class="no-results" *ngIf="noResults && !isSearching">
+        <svg viewBox="0 0 24 24" width="48" height="48"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <p>No se encontraron resultados para "{{ searchQuery }}"</p>
+        <small>Intenta con otros términos de búsqueda</small>
+      </div>
+
+      <!-- Contenido de los resultados -->
+      <div *ngIf="!isSearching && !noResults" class="search-results-content scrollable">
+        <!-- Resultado principal -->
+        <div class="top-result" *ngIf="topSearchResult">
+          <h3>Resultado principal</h3>
+          <div class="top-result-card" (click)="selectTrack(topSearchResult, -1)">
+            <img [src]="topSearchResult.album.images[0]?.url" [alt]="topSearchResult.name" class="top-result-img">
+            <h4 class="top-result-title">{{ topSearchResult.name }}</h4>
+            <p class="top-result-artist">{{ getArtistsNames(topSearchResult) }}</p>
+            <div class="play-icon-overlay">
+              <svg viewBox="0 0 24 24" width="48" height="48"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de canciones -->
+        <div class="songs-list" *ngIf="searchPageResults.length > 0">
+          <h3>Canciones</h3>
+          <div 
+            class="result-item" 
+            *ngFor="let track of searchPageResults; let i = index"
+            (click)="selectTrack(track, -1)">
+            
+            <img [src]="getTrackThumbnail(track)" [alt]="track.name" class="result-thumbnail" />
+            
+            <div class="result-info">
+              <p class="result-title">{{ track.name }}</p>
+              <p class="result-artist">{{ getArtistsNames(track) }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="search-panel">
     <div class="search-header">
-      <h2>Buscar canciones</h2>
+      <h2>Playlist</h2>
       
       <!-- Barra de búsqueda -->
       <div class="search-bar">
-        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
-          <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         <input 
           type="text" 
           [(ngModel)]="searchQuery"
@@ -69,26 +117,14 @@
         <button 
           class="search-btn" 
           (click)="searchTracks()"
-          [disabled]="!searchQuery.trim() || isSearching">
+          [disabled]="!searchQuery.trim()">
           Buscar
         </button>
       </div>
     </div>
-    <div class="loading" *ngIf="isSearching">
-      <div class="spinner"></div>
-      <p>Buscando...</p>
-    </div>
-    <div class="no-results" *ngIf="noResults && !isSearching">
-      <svg viewBox="0 0 24 24" width="48" height="48">
-        <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-      </svg>
-      <p>No se encontraron canciones.</p>
-      <small>Intenta con otros términos de búsqueda</small>
-    </div>
-
-
-    <div class="results-list" *ngIf="searchResults.length > 0 && !isSearching">
-      <h3>Resultados</h3>
+    
+    <!-- La lista de la derecha ahora siempre muestra la playlist inicial -->
+    <div class="results-list">
       <div 
         class="result-item" 
         *ngFor="let track of searchResults; let i = index"
