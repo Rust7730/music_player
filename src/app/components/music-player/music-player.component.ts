@@ -33,68 +33,55 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   progressPercentage: number = 0;
   private audio: HTMLAudioElement | null = null;
   
-  // --- CAMBIO: Propiedades para la VISTA DE BÚSQUEDA ---
-  isShowingSearchResults: boolean = false; // El "interruptor" para cambiar de vista
-  searchPageResults: Track[] = []; // Resultados para la página de búsqueda
-  topSearchResult: Track | null = null; // El resultado principal
-  searchPageAlbums: AlbumInfo[] = []; // Resultados de álbumes
-  searchPageArtists: Artist[] = []; // Resultados de artistas
+  isShowingSearchResults: boolean = false;
+  searchPageResults: Track[] = []; 
+  topSearchResult: Track | null = null; 
+  searchPageAlbums: AlbumInfo[] = []; 
+  searchPageArtists: Artist[] = [];
 
-  // --- CAMBIO: Propiedades para la BÚSQUEDA y la LISTA DE LA DERECHA ---
   searchQuery: string = '';
   searchResults: Track[] = [];
   isSearching: boolean = false;
   noResults: boolean = false;
   currentTrackIndex: number = -1;
 
-  // Término para cargar la lista de la derecha al inicio
   private initialSearchTerm: string = 'El Cuarteto de Nos';
 
   constructor(private spotifyService: SpotifyService) {
-    // El contenido se mueve a ngOnInit para asegurar que el componente esté listo
     this.audio = new Audio();
     this.setupAudioListeners();
   }
 
   ngOnInit(): void {
-    // Al iniciar el componente, cargamos el álbum por defecto.
     this.loadInitialMusic()
   }
 
   private loadInitialMusic(): void {
-    // Este método ahora solo carga la lista de la derecha (la playlist inicial)
-    const initialPlaylistQuery = 'album:Porfiado artist:"El Cuarteto de Nos"';
-    // Usamos el servicio de búsqueda general, aunque solo nos interesan las canciones aquí
+    const initialPlaylistQuery = 'album:habla tu espejo artist:"El Cuarteto de Nos"';
     this.spotifyService.search(initialPlaylistQuery).subscribe({next: (response) => {
-        // 3. Asigna los resultados a la lista de la derecha
         this.searchResults = response.tracks.items;
         this.noResults = this.searchResults.length === 0;
 
-        // 4. Si se encontraron resultados...
         if (!this.noResults) {
-          // ...selecciona la primera canción (índice 0)
-          // y deshabilita el autoplay.
           this.selectTrack(this.searchResults[0], 0, false);
         } else {
-          // Si no hay resultados, carga el placeholder
           this.setDefaultTrack();
         }
         
-        this.isSearching = false; // Oculta el spinner
+        this.isSearching = false;
       },
       error: (error) => {
         console.error('Error al cargar la música inicial:', error);
         this.isSearching = false;
         this.noResults = true;
-        this.setDefaultTrack(); // Muestra el placeholder si hay un error
+        this.setDefaultTrack(); 
       }
     });
   }
 
   ngOnDestroy(): void {
-    // Asegurarse de pausar y limpiar el audio al destruir el componente
     if (this.audio) {
-      try { this.audio.pause(); } catch (e) { /* ignore */ }
+      try { this.audio.pause(); } catch (e) {  }
       this.removeAudioListeners();
       this.audio = null;
     }
@@ -141,7 +128,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
  
   private removeAudioListeners(): void {
     if (this.audio) {
-      // Limpiamos los listeners para evitar fugas de memoria
+
       this.audio.ontimeupdate = null;
       this.audio.onloadedmetadata = null;
       this.audio.onended = null;
@@ -150,13 +137,13 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
   searchTracks(): void {
     if (!this.searchQuery.trim()) {
-      this.isShowingSearchResults = false; // Si la búsqueda está vacía, vuelve al reproductor
+      this.isShowingSearchResults = false; 
       return;
     }
 
     this.isSearching = true;
     this.noResults = false;
-    this.isShowingSearchResults = true; // ¡Encendemos el interruptor!
+    this.isShowingSearchResults = true; 
     
     this.spotifyService.search(this.searchQuery).subscribe({
       next: (response) => {
@@ -167,8 +154,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
         this.noResults = tracks.length === 0 && albums.length === 0 && artists.length === 0;
 
         if (!this.noResults) {
-          this.topSearchResult = tracks[0]; // El primer resultado es el principal
-          this.searchPageResults = tracks.slice(1, 5); // Mostramos los siguientes 4 como lista
+          this.searchPageResults = tracks.slice(1, 5); 
           this.searchPageAlbums = albums.slice(0, 5);
           this.searchPageArtists = artists.slice(0, 5);
         } else {
@@ -195,13 +181,11 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // --- CAMBIO AÑADIDO: Método para volver a la vista del reproductor ---
   public showPlayerView(): void {
     this.isShowingSearchResults = false;
   }
 
   selectTrack(track: Track, index: number, autoplay: boolean = true): void {
-    // --- CAMBIO: Al seleccionar una canción, siempre volvemos a la vista del reproductor ---
     if (this.isShowingSearchResults) {
       this.isShowingSearchResults = false;
     }
@@ -211,7 +195,6 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     this.currentTime = 0;
     this.duration = 0;
     this.progressPercentage = 0;
-    // Limpiamos el audio anterior para evitar que dos canciones suenen a la vez
     if (this.audio) {
       this.audio.pause();
       this.removeAudioListeners();
@@ -220,7 +203,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
     if (track.preview_url) {
       this.audio = new Audio(track.preview_url);
-      this.setupAudioListeners(); // Configuramos los listeners para el nuevo audio
+      this.setupAudioListeners(); 
 
       if (autoplay) {
         this.audio.play().then(() => {
@@ -233,7 +216,6 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
         this.isPlaying = false;
       }
     } else {
-      // Si la canción no tiene preview, nos aseguramos de que el estado sea 'pausado'
       this.isPlaying = false;
     }
   }
@@ -246,7 +228,6 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     if (this.isPlaying) {
       this.audio.pause();
     } else {
-      // Si el audio terminó, lo reiniciamos
       if (this.audio.ended) {
         this.audio.currentTime = 0;
       }
@@ -289,7 +270,6 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
   getTrackThumbnail(track: Track): string {
     if (track.album.images.length > 0) {
-      // Usa la imagen más pequeña disponible
       return track.album.images[track.album.images.length - 1].url;
     }
     return 'https://via.placeholder.com/64x64/1DB954/FFFFFF?text=No+Image';

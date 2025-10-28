@@ -1,7 +1,6 @@
 <div class="music-player-container">
  
   <div class="player-section">
-    <!-- VISTA DEL REPRODUCTOR (se muestra por defecto) -->
     <div *ngIf="!isShowingSearchResults" class="player-content">
       <div class="album-artwork">
         <img [src]="getAlbumImage()" [alt]="currentTrack?.name || 'Album artwork'" />
@@ -13,8 +12,8 @@
           (click)="playPrevious()"
           [disabled]="currentTrackIndex <= 0"
           title="Anterior">
-          <!-- Ícono de anterior -->
-          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16 18h2V6h-2zm-3.5-6l-8.5-6v12z"/></svg>
+          
+          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5-6v12z"/></svg>
         </button>
 
         <button 
@@ -33,7 +32,7 @@
           [disabled]="currentTrackIndex >= searchResults.length - 1 || searchResults.length === 0"
           title="Siguiente">
           <!-- Ícono de siguiente -->
-          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5-6v12z"/></svg>
+          <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16 18h2V6h-2zm-3.5-6l-8.5-6v12z"/></svg>
         </button>
       </div>
 
@@ -43,9 +42,8 @@
       </div>
     </div>
 
-    <!-- VISTA DE RESULTADOS DE BÚSQUEDA (se muestra al buscar) -->
     <div *ngIf="isShowingSearchResults" class="search-results-view">
-      <!-- CAMBIO AÑADIDO: Botón de Home -->
+
       <div class="search-view-header">
         <button class="home-btn" (click)="showPlayerView()" title="Volver al reproductor">
           <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -53,13 +51,12 @@
         </button>
       </div>
 
-      <!-- Indicador de carga para la vista de búsqueda -->
+
       <div class="loading" *ngIf="isSearching">
         <div class="spinner"></div>
         <p>Buscando...</p>
       </div>
 
-      <!-- Mensaje de no resultados para la vista de búsqueda -->
       <div class="no-results" *ngIf="noResults && !isSearching">
         <svg viewBox="0 0 24 24" width="48" height="48"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
         <p>No se encontraron resultados para "{{ searchQuery }}"</p>

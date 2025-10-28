@@ -442,7 +442,7 @@
 .scrollable {
   overflow-y: auto;
   height: 100%;
-  padding-right: 15px; /* Evita que el scrollbar tape el contenido */
+  padding-right: 15px;
 }
 
 .top-result {
@@ -527,7 +527,6 @@
   background: #737373;
 }
 
-/* --- ESTILOS PARA TARJETAS DE ARTISTAS Y ÁLBUMES --- */
 
 .artist-section, .album-section {
   margin-top: 40px;
@@ -554,7 +553,7 @@
 
 .artist-card img, .album-card img {
   width: 100%;
-  aspect-ratio: 1 / 1; /* Mantiene la imagen cuadrada */
+  aspect-ratio: 1 / 1; 
   object-fit: cover;
   margin-bottom: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -585,8 +584,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* Ajustes para la lista de canciones en la vista de búsqueda */
 .songs-list {
   margin-top: 30px;
 }
