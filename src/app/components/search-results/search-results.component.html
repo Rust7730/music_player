@@ -1,60 +1,82 @@
 <div class="search-results-page">
-  <div *ngIf="isLoading" class="loading-indicator">Cargando...</div>
-  <div *ngIf="error" class="error-message">{{ error }}</div>
 
-  <div *ngIf="!isLoading && !error && results">
+  <div class="search-view-header">
+    <button class="home-btn" (click)="goHome()" title="Volver al reproductor">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Home</span>
+    </button>
     <h1>Resultados para "{{ query }}"</h1>
+  </div>
 
-    <div class="top-result-section" *ngIf="topResult">
-      <h2>Resultado principal</h2>
-      <div class="top-result-card">
-        <img [src]="getTopResultImage()" [alt]="getTopResultName()">
-        <h3>{{ getTopResultName() }}</h3>
-        <p>
-          <span>{{ getTopResultType() }}</span>
-          <span *ngIf="getTopResultArtist()"> • {{ getTopResultArtist() }}</span>
-        </p>
-        <button *ngIf="isTrack(topResult)" class="play-button">▶</button> 
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Buscando...</p>
+  </div>
+
+  <div *ngIf="error && !isLoading" class="error-message"> <svg viewBox="0 0 24 24" width="48" height="48"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>
+       <p>{{ error }}</p>
+       <small>Verifica tu conexión o las credenciales del servicio.</small>
+  </div>
+
+
+  <div class="no-results" *ngIf="noResults && !isLoading && !error">
+    <svg viewBox="0 0 24 24" width="48" height="48"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <p>No se encontraron resultados para "{{ query }}"</p>
+    <small>Intenta con otros términos de búsqueda.</small>
+  </div>
+
+  <div *ngIf="!isLoading && !noResults && !error" class="search-results-content scrollable">
+
+    <div class="top-result" *ngIf="topSearchResult">
+      <h3>Resultado principal</h3>
+      <div class="top-result-card" (click)="selectTrackAndPlay(topSearchResult)">
+        <img [src]="getAlbumImage(topSearchResult.album)" [alt]="topSearchResult.name" class="top-result-img">
+        <h4 class="top-result-title">{{ topSearchResult.name }}</h4>
+        <p class="top-result-artist">{{ getArtistsNames(topSearchResult) }}</p>
+        <div class="play-icon-overlay">
+          <svg viewBox="0 0 24 24" width="48" height="48"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+        </div>
       </div>
     </div>
 
-    <div class="songs-section" *ngIf="results?.tracks?.items?.length">
-      <h2>Canciones</h2>
-      <ul>
-        <li *ngFor="let track of results.tracks?.items">
-          <img [src]="getTrackThumbnail(track)" alt="{{track.name}}">
-          <div class="info">
-            <p class="title">{{ track.name }}</p>
-            <p class="artist">{{ getArtistNames(track) }}</p>
-          </div>
-        
-      </ul>
+    <div class="songs-list" *ngIf="searchPageResults.length > 0">
+      <h3>Canciones</h3>
+      <div
+        class="result-item song-item"  *ngFor="let track of searchPageResults; let i = index"
+        (click)="selectTrackAndPlay(track)">
+
+        <img [src]="getTrackThumbnail(track)" [alt]="track?.name || 'track'" class="result-thumbnail" />
+
+        <div class="result-info">
+          <p class="result-title">{{ track?.name }}</p>
+          <p class="result-artist">{{ getArtistsNames(track) }}</p>
+        </div>
+         <div class="play-icon-overlay-list">
+             <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+         </div>
+      </div>
     </div>
 
-    <div class="albums-section" *ngIf="results?.albums?.items?.length">
-      <h2>Álbumes</h2>
+    <div class="artist-section" *ngIf="searchPageArtists.length > 0">
+      <h3>Artistas</h3>
       <div class="card-container">
-         <div class="album-card" *ngFor="let album of results.albums?.items">
-            <img [src]="getAlbumImage(album)" alt="{{album.name}}">
-             <h4>{{ album.name }}</h4>
-             <p>{{ getArtistNames(album) }}</p>
-         </div>
+        <div class="artist-card" *ngFor="let artist of searchPageArtists">
+          <img [src]="getArtistImage(artist)" [alt]="artist?.name || 'artist'" class="artist-image">
+          <h4>{{ artist?.name }}</h4>
+          <p>Artista</p>
+          </div>
       </div>
     </div>
 
-    <div class="artists-section" *ngIf="results?.artists?.items?.length">
-      <h2>Artistas</h2>
-       <div class="card-container">
-         <div class="artist-card" *ngFor="let artist of results.artists?.items">
-            <img [src]="getArtistImage(artist)" alt="{{artist.name}}" class="artist-image"> <h4>{{ artist.name }}</h4>
-             <p>Artista</p>
-         </div>
+    <div class="album-section" *ngIf="searchPageAlbums.length > 0">
+      <h3>Álbumes</h3>
+      <div class="card-container">
+        <div class="album-card" *ngFor="let album of searchPageAlbums">
+          <img [src]="getAlbumImage(album)" [alt]="album?.name || 'album'">
+          <h4>{{ album?.name }}</h4>
+          <p>{{ getArtistsNames(album) }}</p>
+           </div>
       </div>
     </div>
 
-    </div>
-
-   <div *ngIf="!isLoading && !error && !topResult && !results?.tracks?.items?.length && !results?.albums?.items?.length && !results?.artists?.items?.length">
-      <p>No se encontraron resultados para "{{ query }}".</p>
-   </div>
-</div>
+  </div> </div> ```

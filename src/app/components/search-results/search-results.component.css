@@ -1,0 +1,265 @@
+/* src/app/components/search-results/search-results.component.css */
+
+/* Contenedor principal de la página de resultados */
+.search-results-page {
+  width: 100%;
+  height: 100vh; /* Ocupa toda la altura */
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); /* Fondo oscuro */
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* Evita barras de scroll innecesarias */
+  padding: 20px; /* Añade algo de padding general */
+  box-sizing: border-box;
+}
+
+/* Encabezado fijo (Botón Home y Título) */
+.search-view-header {
+  /* position: absolute; top: 20px; left: 20px; z-index: 10; */ /* Opcional si quieres posición absoluta */
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Espacio entre botón y título */
+  margin-bottom: 20px; /* Espacio debajo del header */
+  flex-shrink: 0; /* Evita que se encoja */
+}
+
+.search-view-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+
+.home-btn {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid #535353;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* Evita que se encoja */
+}
+
+.home-btn:hover {
+  background: #282828;
+  border-color: #ffffff;
+}
+
+/* Estilos de Carga, Error y No Resultados (pueden ser los mismos que en music-player) */
+.loading, .no-results, .error-message {
+  flex-grow: 1; /* Ocupa el espacio central si es lo único visible */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  gap: 15px;
+}
+
+.error-message {
+    color: #f88; /* Color rojo para errores */
+}
+.error-message svg { color: #f55; }
+.error-message small { color: #aaa; }
+
+
+.spinner {
+  width: 40px; height: 40px; border: 3px solid #282828;
+  border-top-color: #1DB954; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading p { color: #b3b3b3; font-size: 14px; margin: 0; }
+
+.no-results svg, .error-message svg { color: #535353; width: 48px; height: 48px; }
+.no-results p, .error-message p { color: #b3b3b3; font-size: 16px; font-weight: 600; margin: 0; }
+.no-results small { color: #737373; font-size: 13px; }
+
+/* Contenedor del contenido principal con scroll */
+.search-results-content {
+  flex-grow: 1; 
+  overflow-y: auto; 
+  padding-right: 15px; 
+}
+
+.top-result, .songs-list, .artist-section, .album-section {
+  margin-bottom: 40px; /* Espacio entre secciones */
+}
+
+.top-result h3, .songs-list h3, .artist-section h3, .album-section h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #282828; /* Línea separadora opcional */
+  padding-bottom: 10px;
+}
+
+/* Tarjeta Resultado Principal */
+.top-result-card {
+  background: #181818;
+  padding: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  position: relative; /* Para el overlay */
+  display: flex; /* Mejor usar flex para alinear */
+  align-items: center;
+  gap: 20px;
+}
+
+.top-result-card:hover { background: #282828; }
+.top-result-card:hover .play-icon-overlay { opacity: 1; transform: translateY(0); }
+
+.top-result-img {
+  width: 100px; height: 100px;
+  border-radius: 8px; object-fit: cover;
+  flex-shrink: 0; /* Evita que se encoja */
+  /* margin-bottom: 15px; */ /* Ya no necesario con flex */
+}
+
+.top-result-info {
+   flex-grow: 1; /* Ocupa el espacio restante */
+}
+
+
+.top-result-title { font-size: 24px; font-weight: bold; margin: 0 0 5px 0; }
+.top-result-artist { color: #b3b3b3; margin-top: 5px; }
+
+/* Overlay Play (ajustado para flex) */
+.play-icon-overlay {
+  position: absolute;
+  right: 20px; bottom: 20px;
+  /* O si prefieres alineado a la derecha del texto: */
+  /* position: static; margin-left: auto; */
+  background: #1DB954; border-radius: 50%;
+  width: 50px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  color: #000; /* Color del ícono */
+}
+
+/* Lista de Canciones */
+.songs-list .result-item { /* Usar .song-item para especificidad si es necesario */
+  background: transparent;
+  padding: 10px 5px; /* Ajustar padding */
+  margin-bottom: 5px;
+  position: relative; /* Para overlay */
+  display: flex; align-items: center; gap: 15px;
+  border-radius: 4px;
+   transition: background 0.2s ease;
+}
+ .songs-list .result-item:hover {
+     background: #282828;
+ }
+ .songs-list .result-item:hover .play-icon-overlay-list {
+     opacity: 1;
+ }
+
+
+ .songs-list .result-thumbnail { width: 48px; height: 48px; border-radius: 4px;}
+ .songs-list .result-info { flex: 1; min-width: 0; }
+ .songs-list .result-title { font-size: 14px; margin-bottom: 3px; }
+ .songs-list .result-artist { font-size: 12px; }
+
+ .play-icon-overlay-list {
+    opacity: 0;
+    margin-left: auto; /* Empuja a la derecha */
+    padding: 0 10px;
+    color: #fff;
+    transition: opacity 0.2s ease;
+ }
+
+
+/* Contenedor de Tarjetas (Artistas/Álbumes) */
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+/* Tarjetas individuales */
+.artist-card, .album-card {
+  background: #181818;
+  padding: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  text-align: left; /* Asegurar alineación */
+   position: relative; /* Para overlay */
+   overflow: hidden; /* Para contener la imagen */
+}
+
+.artist-card:hover, .album-card:hover { background: #282828; }
+/* Opcional: overlay para tarjetas */
+/* .artist-card:hover .play-icon-overlay-card, .album-card:hover .play-icon-overlay-card { opacity: 1; transform: translateY(0); } */
+
+.artist-card img, .album-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Mantiene proporción cuadrada o circular */
+  object-fit: cover;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.artist-card img { border-radius: 50%; } /* Círculo para artistas */
+.album-card img { border-radius: 8px; }  /* Cuadrado para álbumes */
+
+.artist-card h4, .album-card h4 {
+  font-size: 16px; font-weight: 600; margin: 0 0 5px 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.artist-card p, .album-card p {
+  font-size: 13px; color: #b3b3b3; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+ /* Overlay opcional para tarjetas */
+ /* .play-icon-overlay-card {
+     position: absolute; right: 15px; bottom: 70px; ...
+ } */
+
+
+/* Scrollbar para la vista de búsqueda */
+.scrollable::-webkit-scrollbar { width: 8px; }
+.scrollable::-webkit-scrollbar-track { background: #121212; /* Fondo oscuro */ }
+.scrollable::-webkit-scrollbar-thumb { background: #535353; border-radius: 4px; }
+.scrollable::-webkit-scrollbar-thumb:hover { background: #737373; }
+
+/* Media Queries (Ajusta según sea necesario para esta vista) */
+@media (max-width: 768px) {
+    .search-results-page { padding: 15px; }
+    .search-view-header { margin-bottom: 15px; gap: 10px;}
+    .search-view-header h1 { font-size: 20px; }
+    .home-btn { padding: 6px 12px; gap: 6px; font-size: 14px;}
+    .home-btn svg { width: 20px; height: 20px;}
+
+    .top-result h3, .songs-list h3, .artist-section h3, .album-section h3 {
+         font-size: 18px; margin-bottom: 15px; padding-bottom: 8px;
+    }
+
+    .top-result-card { flex-direction: column; align-items: flex-start; gap: 10px;}
+    .top-result-img { width: 80px; height: 80px; }
+    .top-result-title { font-size: 20px; }
+    .play-icon-overlay { width: 40px; height: 40px; right: 15px; bottom: 15px;}
+     .play-icon-overlay svg { width: 32px; height: 32px;}
+
+
+     .card-container { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+     .artist-card, .album-card { padding: 10px; }
+     .artist-card h4, .album-card h4 { font-size: 14px; }
+     .artist-card p, .album-card p { font-size: 12px; }
+
+     .songs-list .result-item { padding: 8px 5px; }
+     .songs-list .result-thumbnail { width: 40px; height: 40px; }
+     .songs-list .result-title { font-size: 13px; }
+     .songs-list .result-artist { font-size: 11px; }
+     .play-icon-overlay-list svg { width: 20px; height: 20px;}
+}

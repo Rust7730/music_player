@@ -1,0 +1,41 @@
+<div class="player-content"> <div class="album-artwork">
+    <img [src]="getAlbumImage()" [alt]="(currentTrack$ | async)?.name || 'Album artwork'" />
+  </div>
+
+  <div class="player-controls">
+     <button
+      class="control-btn play-btn"
+      (click)="togglePlayPause()"
+      [class.playing]="isPlaying$ | async"
+      # Deshabilitado si no hay pista O si la pista NO tiene preview_url
+      [disabled]="!(currentTrack$ | async) || !(currentTrack$ | async)?.preview_url"
+      title="Reproducir/Pausar">
+      <svg *ngIf="!(isPlaying$ | async)" viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+      <svg *ngIf="isPlaying$ | async" viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+    </button>
+
+     </div>
+
+  <div class="progress-bar-container" *ngIf="(currentTrack$ | async)?.preview_url">
+      <span class="time-label">{{ (currentTime$ | async) ?? 0 | timeFormat }}</span>
+       <div class="progress-bar" (click)="seek($event)">
+        <div class="progress-bar-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <span class="time-label">{{ (duration$ | async) ?? 0 | timeFormat }}</span>
+  </div>
+
+  <div class="track-info" *ngIf="currentTrack$ | async as track">
+    <h1 class="track-title">{{ track.name }}</h1>
+    <p class="track-artist">{{ getArtistsNames(track) }}</p>
+  </div>
+
+   <div *ngIf="(currentTrack$ | async) && !(currentTrack$ | async)?.preview_url" class="no-preview-message">
+       <p>Esta canción no tiene previsualización disponible.</p>
+   </div>
+
+
+  <div class="track-info placeholder" *ngIf="!(currentTrack$ | async)">
+      <h1 class="track-title">Selecciona una canción</h1>
+      <p class="track-artist">Usa la búsqueda o la playlist</p>
+  </div>
+</div>
